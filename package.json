@@ -1,0 +1,16 @@
+{
+  "name": "pancakeswap-sniper-bot",
+  "version": "1.0.0",
+  "description": "A free NodeJS sniper bot built to work with PancakeSwap: Router V2.",
+  "main": "pancakeswap-sniper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Miroslav Nedelchev <miroslavn94@gmail.com> (https://mnedelchev.me)",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "^1.8.2",
+    "web3": "1.0.0-beta.36"
+  }
+}
