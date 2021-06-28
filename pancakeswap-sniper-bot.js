@@ -31,7 +31,7 @@ const projectData = {
                     if (err) throw err;
                 });
             }
-        },
+        }, 
         propertyExists: function(object, key) {
             return object ? hasOwnProperty.call(object, key) : false;
         }
