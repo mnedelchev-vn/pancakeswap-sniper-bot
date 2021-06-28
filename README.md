@@ -28,10 +28,10 @@ You can run the script using `node` or `pm2` commands. I personally like to use 
 #### Optional parameters:
 * `gasLimit` - the transaction gas limit, default value is 300000.
 * `gasPrice` - the transaction gas price in Gwei, default value is 10 Gwei.
-* `transactionIterations` - how many times you want the transaction to be executed. Some fairlaunches have smart contract conditions to not buy big amounts of tokens for single transaction, so in the case that you want to buy bigger amount and to bypass the contract condition you can execute many transactions buying same amount. Setting `transactionIterations` to 3 will execute 3 differen buying transactions with same transaction parameters. Default value is 1.
+* `transactionIterations` - how many times you want the transaction to be executed. Some fairlaunches have smart contract conditions to not buy big amounts of tokens for single transaction, so in the case that you want to buy bigger amount and to bypass the contract condition you can execute many transactions buying same amount. Setting `transactionIterations` to 3 will execute 3 different buying transactions with the same transaction parameters. Default value is 1.
 * `transactionSlippage` - the difference ( in percents ) between the expected price of a trade and the executed price of that trade. Default value is 15 percents, integer.
 * `transactionDeadline` - your transaction will revert if it is pending for more than this long. Default value is 1200 seconds, integer.
-* `bscNetwork` - accepts only `'mainet'` and `'testnet'` values. Defines to which network should the bot submit blockchain transactions. Default value is `'testnet'`.
+* `bscNetwork` - accepts only `'mainnet'` and `'testnet'` values. Defines to which network should the bot submit blockchain transactions. Default value is `'testnet'`.
 * `createLogs` - boolean, if set to `true` it will create ./logs folder and save logs on different bot actions.
 * `cronTime` - how often should the bot try to buy the particular token. Default is `'* * * * * *'` aka every second.
 * `cronTimezone` - default value is `'America/Los_Angeles'`.
