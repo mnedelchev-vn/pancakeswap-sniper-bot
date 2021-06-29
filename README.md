@@ -1,3 +1,5 @@
+![alt text](hhttps://github.com/mnedelchev-vn/pancakeswap-sniper-bot/pancakeswap-sniper-bot.png)
+
 # PancakeSwap sniper bot
 
 ## Purpose
@@ -26,7 +28,7 @@ You can run the script using `node` or `pm2` commands. I personally like to use 
 * `senderPrivateKey` - this is the private key of the wallet address which will be used to execute the buying transaction. String, 66 bytes size starting with `0x`.
 
 #### Optional parameters:
-* `gasLimit` - the transaction gas limit, default value is 300000.
+* `gasLimit` - the maximum amount of gas you are willing to consume on a transaction, default value is 300000.
 * `gasPrice` - the transaction gas price in Gwei, default value is 10 Gwei.
 * `transactionIterations` - how many times you want the transaction to be executed. Some fairlaunches have smart contract conditions to not buy big amounts of tokens for single transaction, so in the case that you want to buy bigger amount and to bypass the contract condition you can execute many transactions buying same amount. Setting `transactionIterations` to 3 will execute 3 different buying transactions with the same transaction parameters. Default value is 1.
 * `transactionSlippage` - the difference ( in percents ) between the expected price of a trade and the executed price of that trade. Default value is 15 percents, integer.
@@ -39,4 +41,4 @@ You can run the script using `node` or `pm2` commands. I personally like to use 
 #### Sample terminal command:
 `pm2 start pancakeswap-sniper-bot.js -- tokenAddress=0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51 buyingBnbAmount=1.05 senderPrivateKey=0x8da4ef21b864d2cc526dbdb2a120bd2874c36c9d0a1fb7f8c63d7f7a8b41de8f createLogs=true gasPrice=25 transactionSlippage=30 bscNetwork=mainnet`
 
-If you wish to use the both at same time for multiple transactions you could make several pm2 instances by passing `--name` parameter to the pm2 command. Example: `--name "app name"`.
+If you wish to use the bot at same time for multiple transactions you could make several pm2 instances by passing `--name` parameter to the pm2 command. Example: `--name "app name"`.
