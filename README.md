@@ -1,4 +1,4 @@
-![alt text](hhttps://github.com/mnedelchev-vn/pancakeswap-sniper-bot/pancakeswap-sniper-bot.png)
+![alt text](https://github.com/mnedelchev-vn/pancakeswap-sniper-bot/blob/main/pancakeswap-sniper-bot.png)
 
 # PancakeSwap sniper bot
 
