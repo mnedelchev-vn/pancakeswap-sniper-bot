@@ -17,7 +17,7 @@ This bot allows you to compete with other trading bots when buying a cryptocurre
 * pm2
 
 ## Installation
-Clone this repository and run `npm install`. This command will download all the needed libraries which the bot needs to work properly.
+Clone this repository ( or download from Code -> Download ZIP ) and run `npm install` inside the project folder. This command will download all the needed libraries which the bot needs to work properly.
 
 ## Usage
 You can run the script using `node` or `pm2` commands. I personally like to use the `pm2` command on my server, because PM2 is a process manager which takes care for my script to run 24/7. 
@@ -39,6 +39,7 @@ You can run the script using `node` or `pm2` commands. I personally like to use 
 * `cronTimezone` - default value is `'America/Los_Angeles'`.
 
 #### Sample terminal command:
-`pm2 start pancakeswap-sniper-bot.js -- tokenAddress=0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51 buyingBnbAmount=1.05 senderPrivateKey=0x8da4ef21b864d2cc526dbdb2a120bd2874c36c9d0a1fb7f8c63d7f7a8b41de8f createLogs=true gasPrice=25 transactionSlippage=30 bscNetwork=mainnet`
+* Using `node` - `node pancakeswap-sniper-bot.js -- tokenAddress=0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51 buyingBnbAmount=1.05 senderPrivateKey=0x8da4ef21b864d2cc526dbdb2a120bd2874c36c9d0a1fb7f8c63d7f7a8b41de8f createLogs=true gasPrice=25 transactionSlippage=30 bscNetwork=mainnet`
+* Using `pm2` - `pm2 start pancakeswap-sniper-bot.js -- tokenAddress=0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51 buyingBnbAmount=1.05 senderPrivateKey=0x8da4ef21b864d2cc526dbdb2a120bd2874c36c9d0a1fb7f8c63d7f7a8b41de8f createLogs=true gasPrice=25 transactionSlippage=30 bscNetwork=mainnet`
 
-If you wish to use the bot at same time for multiple transactions you could make several pm2 instances by passing `--name` parameter to the pm2 command. Example: `--name "app name"`.
+If you wish to use the bot at same time for multiple crypto tokens you could make several pm2 instances by passing `--name` parameter to the pm2 command. Example: `--name "app name"`.

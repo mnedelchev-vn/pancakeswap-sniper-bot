@@ -3,6 +3,8 @@ const fs = require('fs');
 const CronJob = require('cron').CronJob;
 const Web3 = require('web3');
 
+console.log('Starting the PancakeSwap Sniper bot ... ¯\\_(ツ)_/¯');
+
 // ======================== DEFAULT CONFIG ========================
 var bscNetwork = 'testnet';
 var allowedNetworks = ['testnet', 'mainnet'];
@@ -26,6 +28,7 @@ const projectData = {
             if (createLogs) {
                 if (fs.existsSync(logsPath)) {
                     content = '\r\n' + new Date().toUTCString() + ': ' + content;
+                    console.log(content);
                 }
                 fs.appendFile(logsPath, content, function (err) {
                     if (err) throw err;
