@@ -3,7 +3,7 @@ const fs = require('fs');
 const CronJob = require('cron').CronJob;
 const Web3 = require('web3');
 
-console.log('Starting the PancakeSwap Sniper bot ... ¯\\_(ツ)_/¯');
+console.log('Welcome to PancakeSwap Sniper bot!');
 
 // ======================== DEFAULT CONFIG ========================
 var bscNetwork = 'testnet';
@@ -64,15 +64,24 @@ var senderPrivateKey = args.senderPrivateKey;
 // ======================== /REQUIRED PARAMETERS ========================
 
 // ======================== CHANGING DEFAULT PARAMETERS IF THEY ARE PASSED ========================
-gasLimit = (projectData.utils.propertyExists(args, 'gasLimit') && args.gasLimit != '' && args.gasLimit != null && args.gasLimit != undefined) ? args.gasLimit : gasLimit;
-gasPrice = (projectData.utils.propertyExists(args, 'gasPrice') && args.gasPrice != '' && args.gasPrice != null && args.gasPrice != undefined) ? args.gasPrice * 1000000000 : gasPrice * 1000000000;
-transactionIterations = (projectData.utils.propertyExists(args, 'transactionIterations') && args.transactionIterations != '' && args.transactionIterations != null && args.transactionIterations != undefined) ? args.transactionIterations : transactionIterations;
-transactionSlippage = (projectData.utils.propertyExists(args, 'transactionSlippage') && args.transactionSlippage != '' && args.transactionSlippage != null && args.transactionSlippage != undefined) ? args.transactionSlippage : transactionSlippage;
-transactionDeadline = (projectData.utils.propertyExists(args, 'transactionDeadline') && args.transactionDeadline != '' && args.transactionDeadline != null && args.transactionDeadline != undefined) ? args.transactionDeadline : transactionDeadline;
 bscNetwork = (projectData.utils.propertyExists(args, 'bscNetwork') && allowedNetworks.includes(args.bscNetwork)) ? args.bscNetwork : bscNetwork;
+console.log('BSC network: ' + bscNetwork);
+gasLimit = (projectData.utils.propertyExists(args, 'gasLimit') && args.gasLimit != '' && args.gasLimit != null && args.gasLimit != undefined) ? args.gasLimit : gasLimit;
+console.log('Gas limit: ' + gasLimit);
+gasPrice = (projectData.utils.propertyExists(args, 'gasPrice') && args.gasPrice != '' && args.gasPrice != null && args.gasPrice != undefined) ? args.gasPrice * 1000000000 : gasPrice * 1000000000;
+console.log('Gas price: ' + (gasPrice / 1000000000) + ' Gwei');
+transactionIterations = (projectData.utils.propertyExists(args, 'transactionIterations') && args.transactionIterations != '' && args.transactionIterations != null && args.transactionIterations != undefined) ? args.transactionIterations : transactionIterations;
+console.log('Transaction iterations: ' + transactionIterations);
+transactionSlippage = (projectData.utils.propertyExists(args, 'transactionSlippage') && args.transactionSlippage != '' && args.transactionSlippage != null && args.transactionSlippage != undefined) ? args.transactionSlippage : transactionSlippage;
+console.log('Transaction slippage: ' + transactionSlippage);
+transactionDeadline = (projectData.utils.propertyExists(args, 'transactionDeadline') && args.transactionDeadline != '' && args.transactionDeadline != null && args.transactionDeadline != undefined) ? args.transactionDeadline : transactionDeadline;
+console.log('Transaction deadline: ' + transactionDeadline);
 createLogs = (projectData.utils.propertyExists(args, 'createLogs') && args.createLogs === 'true') ? true : createLogs;
+console.log('Creating logs: ' + createLogs);
 cronTime = (projectData.utils.propertyExists(args, 'cronTime') && args.cronTime != '' && args.cronTime != null && args.cronTime != undefined) ? args.cronTime : cronTime;
+console.log('Cron time: ' + cronTime);
 cronTimezone = (projectData.utils.propertyExists(args, 'cronTimezone') && args.cronTimezone != '' && args.cronTimezone != null && args.cronTimezone != undefined) ? args.cronTimezone : cronTimezone;
+console.log('Cron timezone: ' + cronTimezone);
 // ======================== /CHANGING DEFAULT PARAMETERS IF THEY ARE PASSED ========================
 
 // if logs dir missing then create it
@@ -96,96 +105,99 @@ var pancakeContractABI = [{"inputs":[{"internalType":"address","name":"_factory"
 var pancakeContract = new web3.eth.Contract(pancakeContractABI, pancakeContractAddress);
 var senderAddress = web3.eth.accounts.privateKeyToAccount(senderPrivateKey).address;
 
-var executeBuy = true;
-// take the current nonce of the sender
-web3.eth.getTransactionCount(senderAddress, 'pending', function (nonceErr, nonceResponse) {
-    var nonce = nonceResponse;
-    var txParams = {
-        gas: web3.utils.toHex(gasLimit),
-        gasPrice: web3.utils.toHex(gasPrice),
-        nonce: web3.utils.toHex(nonce),
-        chainId: chainId,
-        value: web3.utils.toHex(web3.utils.toWei(buyingBnbAmount, 'ether')),
-        to: pancakeContractAddress
-    };
+console.log('Starting the PancakeSwap Sniper bot in 5 seconds... ¯\\_(ツ)_/¯');
+setTimeout(function () {
+    var executeBuy = true;
+    // take the current nonce of the sender
+    web3.eth.getTransactionCount(senderAddress, 'pending', function (nonceErr, nonceResponse) {
+        var nonce = nonceResponse;
+        var txParams = {
+            gas: web3.utils.toHex(gasLimit),
+            gasPrice: web3.utils.toHex(gasPrice),
+            nonce: web3.utils.toHex(nonce),
+            chainId: chainId,
+            value: web3.utils.toHex(web3.utils.toWei(buyingBnbAmount, 'ether')),
+            to: pancakeContractAddress
+        };
 
-    // cronjob running every second
-    var job = new CronJob(cronTime, function() {
-        projectData.utils.createLog('Cronjob iteration.');
-        if (executeBuy) {
-            executeBuy = false;
+        // cronjob running every second
+        var job = new CronJob(cronTime, function() {
+            projectData.utils.createLog('Cronjob iteration.');
+            if (executeBuy) {
+                executeBuy = false;
 
-            return executeTransaction(executed);
-            function executeTransaction(executed) {
-                pancakeContract.methods.getAmountsOut(web3.utils.toWei(buyingBnbAmount, 'ether'), [wbnbAddress, tokenAddress]).call({}, function(amountsOutError, amountsOutResult)   {
-                    if (!amountsOutError) {
-                        var amountOut = amountsOutResult[1];
-                        if (amountOut > 0) {
-                            amountOut = amountOut - (amountOut * transactionSlippage / 100);
-                            projectData.utils.createLog('Trading pair active. amountOut: ' + amountOut);
+                return executeTransaction(executed);
+                function executeTransaction(executed) {
+                    pancakeContract.methods.getAmountsOut(web3.utils.toWei(buyingBnbAmount, 'ether'), [wbnbAddress, tokenAddress]).call({}, function(amountsOutError, amountsOutResult)   {
+                        if (!amountsOutError) {
+                            var amountOut = amountsOutResult[1];
+                            if (amountOut > 0) {
+                                amountOut = amountOut - (amountOut * transactionSlippage / 100);
+                                projectData.utils.createLog('Trading pair is active.');
 
-                            amountOut = BigInt(Math.round(amountOut));
-                            amountOut = amountOut.toString();
+                                amountOut = BigInt(Math.round(amountOut));
+                                amountOut = amountOut.toString();
 
-                            // check if swap transaction is going to succeed or fail
-                            pancakeContract.methods.swapExactETHForTokens(amountOut, [wbnbAddress, tokenAddress], senderAddress, Math.round(new Date(new Date().getTime() + (transactionDeadline * 1000)).getTime() / 1000)).estimateGas({from: senderAddress, gas: gasLimit, value: web3.utils.toHex(web3.utils.toWei(buyingBnbAmount, 'ether'))}, function(gasEstimateError, gasAmount) {
-                                if (!gasEstimateError) {
-                                    projectData.utils.createLog('Method executeTransaction, params: {executed: ' + executed  + ',  amountOut: ' + amountOut  + ', wbnbAddress: ' + wbnbAddress  + ', tokenAddress: ' + tokenAddress  + ', senderAddress: ' + senderAddress + '}');
-                                    txParams.data = pancakeContract.methods.swapExactETHForTokens(amountOut, [wbnbAddress, tokenAddress], senderAddress, Math.round(new Date(new Date().getTime() + (transactionDeadline * 1000)).getTime() / 1000)).encodeABI();
+                                // check if swap transaction is going to succeed or fail
+                                pancakeContract.methods.swapExactETHForTokens(amountOut, [wbnbAddress, tokenAddress], senderAddress, Math.round(new Date(new Date().getTime() + (transactionDeadline * 1000)).getTime() / 1000)).estimateGas({from: senderAddress, gas: gasLimit, value: web3.utils.toHex(web3.utils.toWei(buyingBnbAmount, 'ether'))}, function(gasEstimateError, gasAmount) {
+                                    if (!gasEstimateError) {
+                                        projectData.utils.createLog('Method executeTransaction, params: {executed: ' + executed  + ',  amountOut: ' + amountOut  + ', wbnbAddress: ' + wbnbAddress  + ', tokenAddress: ' + tokenAddress  + ', senderAddress: ' + senderAddress + '}');
+                                        txParams.data = pancakeContract.methods.swapExactETHForTokens(amountOut, [wbnbAddress, tokenAddress], senderAddress, Math.round(new Date(new Date().getTime() + (transactionDeadline * 1000)).getTime() / 1000)).encodeABI();
 
-                                    web3.eth.accounts.signTransaction(txParams, senderPrivateKey, function (signTransactionErr, signedTx) {
-                                        if (!signTransactionErr) {
-                                            nonce += 1;
-                                            txParams.nonce = web3.utils.toHex(nonce);
+                                        web3.eth.accounts.signTransaction(txParams, senderPrivateKey, function (signTransactionErr, signedTx) {
+                                            if (!signTransactionErr) {
+                                                nonce += 1;
+                                                txParams.nonce = web3.utils.toHex(nonce);
 
-                                            web3.eth.sendSignedTransaction(signedTx.rawTransaction, function (sendSignedTransactionErr, transactionHash) {
-                                                if (!sendSignedTransactionErr) {
-                                                    executed += 1;
+                                                web3.eth.sendSignedTransaction(signedTx.rawTransaction, function (sendSignedTransactionErr, transactionHash) {
+                                                    if (!sendSignedTransactionErr) {
+                                                        executed += 1;
 
-                                                    if (transactionIterations != 1) {
-                                                        projectData.utils.createLog('Buying order N: ' + executed + '.');
-                                                        if (executed != transactionIterations) {
-                                                            return executeTransaction(executed);
+                                                        if (transactionIterations != 1) {
+                                                            projectData.utils.createLog('Buying order N: ' + executed + '.');
+                                                            if (executed != transactionIterations) {
+                                                                return executeTransaction(executed);
+                                                            }
+                                                        } else {
+                                                            projectData.utils.createLog('First and only buying order.');
                                                         }
                                                     } else {
-                                                        projectData.utils.createLog('First and only buying order.');
+                                                        if (sendSignedTransactionErr.message) {
+                                                            projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.message);
+                                                        } else {
+                                                            projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.toString());
+                                                        }
                                                     }
-                                                } else {
-                                                    if (sendSignedTransactionErr.message) {
-                                                        projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.message);
-                                                    } else {
-                                                        projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.toString());
-                                                    }
-                                                }
-                                            });
-                                        } else {
-                                            if (signTransactionErr.message) {
-                                                projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.message);
+                                                });
                                             } else {
-                                                projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.toString());
+                                                if (signTransactionErr.message) {
+                                                    projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.message);
+                                                } else {
+                                                    projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.toString());
+                                                }
                                             }
-                                        }
-                                    });
-                                } else {
-                                    executeBuy = true;
-                                    if (gasEstimateError.message) {
-                                        projectData.utils.createLog('Method pancakeContract.methods.swapExactETHForTokens.estimateGas() failed. Message: ' + gasEstimateError.message);
+                                        });
                                     } else {
-                                        projectData.utils.createLog('Method pancakeContract.methods.swapExactETHForTokens.estimateGas() failed. Message: ' + gasEstimateError.toString());
+                                        executeBuy = true;
+                                        if (gasEstimateError.message) {
+                                            projectData.utils.createLog('Method pancakeContract.methods.swapExactETHForTokens.estimateGas() failed. Message: ' + gasEstimateError.message);
+                                        } else {
+                                            projectData.utils.createLog('Method pancakeContract.methods.swapExactETHForTokens.estimateGas() failed. Message: ' + gasEstimateError.toString());
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            } else {
+                                executeBuy = true;
+                                projectData.utils.createLog('Trading pair active. amountOut smaller or equal to 0.');
+                            }
                         } else {
                             executeBuy = true;
-                            projectData.utils.createLog('Trading pair active. amountOut smaller or equal to 0.');
+                            projectData.utils.createLog('Trading pair not active yet.');
                         }
-                    } else {
-                        executeBuy = true;
-                        projectData.utils.createLog('Trading pair not active yet.');
-                    }
-                });
+                    });
+                }
             }
-        }
-    }, null, true, cronTimezone);
-    job.start();
-});
+        }, null, true, cronTimezone);
+        job.start();
+    });
+}, 5000);
