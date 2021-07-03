@@ -9,6 +9,7 @@ This bot allows you to compete with other trading bots when buying a cryptocurre
 * Has the option to work with both BSC mainnet and testnet
 * Including all kind of transaction options like gas price, gas limit, transaction slippage, transaction deadline, etc
 * Has the option to fire multiple transactions at once
+* Supporting milliseconds
 * Free
 
 ## Requirements
