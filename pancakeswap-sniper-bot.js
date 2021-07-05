@@ -15,7 +15,7 @@ var executed = 0;
 var transactionSlippage = 15; // in percents
 var transactionDeadline = 1200; // in seconds
 var createLogs = false;
-var cronTime = '*/10 * * * * * *'; // every 10 milliseconds
+var cronTime = '*/100 * * * * * *'; // every 10 milliseconds
 var botInitialDelay = 10000;
 // ======================== /DEFAULT CONFIG ========================
 
