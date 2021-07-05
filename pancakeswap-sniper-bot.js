@@ -8,7 +8,7 @@ console.log('Welcome to PancakeSwap Sniper bot!');
 // ======================== DEFAULT CONFIG ========================
 var bscNetwork = 'testnet';
 var allowedNetworks = ['testnet', 'mainnet'];
-var gasLimit = 300000;
+var gasLimit = 500000;
 var gasPrice = 10; // in gwei
 var transactionIterations = 1;
 var executed = 0;
@@ -179,6 +179,7 @@ function initPancakeswapSniperBot() {
                                                                                         job.stop();
                                                                                     }
                                                                                 } else {
+                                                                                    executeBuy = true;
                                                                                     if (sendSignedTransactionErr.message) {
                                                                                         projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.message);
                                                                                     } else {
@@ -187,6 +188,7 @@ function initPancakeswapSniperBot() {
                                                                                 }
                                                                             });
                                                                         } else {
+                                                                            executeBuy = true;
                                                                             if (signTransactionErr.message) {
                                                                                 projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.message);
                                                                             } else {
@@ -227,6 +229,7 @@ function initPancakeswapSniperBot() {
                         }
                     });
                 } else {
+                    executeBuy = true;
                     projectData.utils.createLog('Sender address does not have enough BNB balance to execute the transaction. Current balance: ' + web3.utils.fromWei(getBalanceResponse.toString(), 'ether') + ' BNB.');
                     return false;
                 }
