@@ -6,6 +6,7 @@
 This bot allows you to compete with other trading bots when buying a cryptocurrency. Can be used for fairlaunch projects or if you've been unlucky and not being whitelisted for the private or public sales and you still want to buy immediately on PancakeSwap pair creation. If a project is hype it is quite impossible to compete manually with bots. For long time bots have been integral part of trading not only for the cryptocurrencies, but also for stocks, fiat currencies, etc.
 
 ## Features
+* Operating with PancakeSwap: Router v2
 * Has the option to work with both BSC mainnet and testnet
 * Including all kind of transaction options like gas price, gas limit, transaction slippage, transaction deadline, etc
 * Has the option to fire multiple transactions at once

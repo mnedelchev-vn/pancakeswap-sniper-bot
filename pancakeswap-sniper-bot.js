@@ -75,9 +75,9 @@ function initPancakeswapSniperBot() {
     var tokenAddress = args.tokenAddress;
     var senderPrivateKey = args.senderPrivateKey;
     var senderAddress = web3.eth.accounts.privateKeyToAccount(senderPrivateKey).address;
-// ======================== /REQUIRED PARAMETERS ========================
+    // ======================== /REQUIRED PARAMETERS ========================
 
-// ======================== CHANGING DEFAULT PARAMETERS IF THEY ARE PASSED ========================
+    // ======================== CHANGING DEFAULT PARAMETERS IF THEY ARE PASSED ========================
     console.log('Address used to send the transactions: ' + senderAddress);
     bscNetwork = (projectData.utils.propertyExists(args, 'bscNetwork') && allowedNetworks.includes(args.bscNetwork)) ? args.bscNetwork : bscNetwork;
     console.log('BSC network: ' + bscNetwork);

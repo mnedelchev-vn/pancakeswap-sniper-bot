@@ -2,7 +2,7 @@
   "name": "pancakeswap-sniper-bot",
   "version": "1.0.0",
   "description": "A free NodeJS sniper bot built to work with PancakeSwap: Router V2.",
-  "main": "pancakeswap-sniper.js",
+  "main": "pancakeswap-sniper-bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
