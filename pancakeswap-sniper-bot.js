@@ -50,6 +50,7 @@ for (var i = 0, len = params.length; i < len; i+=1) {
 }
 
 function initPancakeswapSniperBot() {
+    bscNetwork = (projectData.utils.propertyExists(args, 'bscNetwork') && allowedNetworks.includes(args.bscNetwork)) ? args.bscNetwork : bscNetwork;
     if (bscNetwork == 'mainnet') {
         var web3 = new Web3(new Web3.providers.HttpProvider('https://bsc-dataseed1.binance.org:443'));
         var pancakeContractAddress = '0x10ed43c718714eb63d5aa57b78b54704e256024e';
@@ -79,7 +80,6 @@ function initPancakeswapSniperBot() {
 
     // ======================== CHANGING DEFAULT PARAMETERS IF THEY ARE PASSED ========================
     console.log('Address used to send the transactions: ' + senderAddress);
-    bscNetwork = (projectData.utils.propertyExists(args, 'bscNetwork') && allowedNetworks.includes(args.bscNetwork)) ? args.bscNetwork : bscNetwork;
     console.log('BSC network: ' + bscNetwork);
     gasLimit = (projectData.utils.propertyExists(args, 'gasLimit') && args.gasLimit != '' && args.gasLimit != null && args.gasLimit != undefined) ? args.gasLimit : gasLimit;
     console.log('Gas limit: ' + gasLimit);
