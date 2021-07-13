@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "cronr": "^2.2.1",
-    "web3": "1.0.0-beta.36"
+    "web3": "1.3.6"
   }
 }
