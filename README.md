@@ -30,7 +30,8 @@ You can run the script using `node` or `pm2` commands. I personally like to use 
 * `senderPrivateKey` - this is the private key of the wallet address which will be used to execute the buying transaction. String, 66 bytes size starting with `0x`. *If you're using MetaMask then you will have to manually add `0x` at the beginning of your private key, because MetaMask is displaying the private key with 64 bytes size.*
 
 #### Optional parameters:
-* `gasLimit` - the maximum amount of gas you are willing to consume on a transaction, default value is 500000. *( This value may not be sufficient in some cases because some projects require more `gasLimit` in order for the tokens to be transferred. )*
+* `gasLimit` - the maximum amount of gas you are willing to consume on a transaction, default value is 500000. 
+*( This value may not be sufficient in some cases, because some projects require more `gasLimit` in order for the tokens to be transferred. )*
 * `gasPrice` - the transaction gas price in Gwei, default value is 10 Gwei.
 * `transactionIterations` - how many times you want the transaction to be executed. Some fairlaunch projects have smart contract conditions to not buy big amounts of tokens for single transaction, so in the case that you want to buy bigger amount and to bypass the contract condition you can execute many transactions buying same amount. Setting `transactionIterations` to 3 will execute 3 different buying transactions with the same transaction parameters. Default value is 1.
 * `transactionSlippage` - the difference ( in percents ) between the expected price of a trade and the executed price of that trade. Default value is 15 percents, integer.
