@@ -5,6 +5,11 @@
 ## Purpose
 This bot allows you to compete with other trading bots when buying a cryptocurrency. Can be used for fairlaunch projects or if you've been unlucky and not being whitelisted for the private or public sales and you still want to buy immediately on PancakeSwap pair creation. If a project is hype it is quite impossible to compete manually with bots. For long time bots have been integral part of trading not only for the cryptocurrencies, but also for stocks, fiat currencies, etc.
 
+## Grateful users & donations
+This sniper bot is **fully free** and it was never meant to be paid. However if you appreciate my work I accept donations at **0x5ADD71300d924213456b037b5be25020C62D9e08**. The real rockstars will follow my twitter as well:
+
+[![Twitter URL](https://github.com/mnedelchev-vn/pancakeswap-sniper-bot/blob/master/assets/images/twitter.svg)](https://twitter.com/intent/follow?screen_name=mnedelchev_)
+
 ## Features
 * Operating with PancakeSwap: Router v2
 * Has the option to work with both BSC mainnet and testnet
@@ -30,6 +35,7 @@ You can run the script using `node` or `pm2` commands. I personally like to use 
 * `senderPrivateKey` - this is the private key of the wallet address which will be used to execute the buying transaction. String, 66 bytes size starting with `0x`. *If you're using MetaMask then you will have to manually add `0x` at the beginning of your private key, because MetaMask is displaying the private key with 64 bytes size.*
 
 #### Optional parameters:
+* `node` - by default the bot will be using a standard BSC node. This node will be enough for signing transactions, but however if you want be fast as possible in presales you should find your self a fast node ( usually they're not free ). When you're able to provide a node better than the standard one you can pass it as `node` parameter. The node has to be full URI to the RPC endpoint, example: `https://localhost:8545`.
 * `gasLimit` - the maximum amount of gas you are willing to consume on a transaction, default value is 500000. 
 *( This value may not be sufficient in some cases, because some projects require more `gasLimit` in order for the tokens to be transferred. )*
 * `gasPrice` - the transaction gas price in Gwei, default value is 10 Gwei.

@@ -6,6 +6,7 @@ const Web3 = require('web3');
 console.log('Welcome to PancakeSwap Sniper bot!');
 
 // ======================== DEFAULT CONFIG ========================
+var node = 'https://bsc-dataseed.binance.org/';
 var bscNetwork = 'testnet';
 var allowedNetworks = ['testnet', 'mainnet'];
 var gasLimit = 500000;
@@ -50,9 +51,19 @@ for (var i = 0, len = params.length; i < len; i+=1) {
 }
 
 function initPancakeswapSniperBot() {
+    // ======================== REQUIRED PARAMETERS ========================
+    if (!projectData.utils.propertyExists(args, 'tokenAddress') || args.tokenAddress == '' || args.tokenAddress == null || args.tokenAddress == undefined || args.tokenAddress.length != 42) {
+        return console.error('Missing or wrong tokenAddress parameter.');
+    } else if (!projectData.utils.propertyExists(args, 'buyingBnbAmount') || args.buyingBnbAmount == '' || args.buyingBnbAmount == null || args.buyingBnbAmount == undefined) {
+        return console.error('Missing or wrong buyingBnbAmount parameter.');
+    } else if (!projectData.utils.propertyExists(args, 'senderPrivateKey') || args.senderPrivateKey == '' || args.senderPrivateKey == null || args.senderPrivateKey == undefined || args.senderPrivateKey.length != 66) {
+        return console.error('Missing or wrong senderPrivateKey parameter.');
+    }
+
     bscNetwork = (projectData.utils.propertyExists(args, 'bscNetwork') && allowedNetworks.includes(args.bscNetwork)) ? args.bscNetwork : bscNetwork;
     if (bscNetwork == 'mainnet') {
-        var web3 = new Web3(new Web3.providers.HttpProvider('https://bsc-dataseed.binance.org/'));
+        node = (projectData.utils.propertyExists(args, 'node') && args.node != '' && args.node != null && args.node != undefined) ? args.node : 'https://bsc-dataseed.binance.org/';
+        var web3 = new Web3(new Web3.providers.HttpProvider(node));
         var pancakeContractAddress = '0x10ed43c718714eb63d5aa57b78b54704e256024e';
         var wbnbAddress = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
         var chainId = 56;
@@ -63,15 +74,6 @@ function initPancakeswapSniperBot() {
         var chainId = 97;
     }
 
-// ======================== REQUIRED PARAMETERS ========================
-    if (!projectData.utils.propertyExists(args, 'tokenAddress') || args.tokenAddress == '' || args.tokenAddress == null || args.tokenAddress == undefined || args.tokenAddress.length != 42) {
-        return console.error('Missing or wrong tokenAddress parameter.');
-    } else if (!projectData.utils.propertyExists(args, 'buyingBnbAmount') || args.buyingBnbAmount == '' || args.buyingBnbAmount == null || args.buyingBnbAmount == undefined) {
-        return console.error('Missing or wrong buyingBnbAmount parameter.');
-    } else if (!projectData.utils.propertyExists(args, 'senderPrivateKey') || args.senderPrivateKey == '' || args.senderPrivateKey == null || args.senderPrivateKey == undefined || args.senderPrivateKey.length != 66) {
-        return console.error('Missing or wrong senderPrivateKey parameter.');
-    }
-
     var buyingBnbAmount = args.buyingBnbAmount;
     var tokenAddress = args.tokenAddress;
     var senderPrivateKey = args.senderPrivateKey;
@@ -80,6 +82,7 @@ function initPancakeswapSniperBot() {
 
     // ======================== CHANGING DEFAULT PARAMETERS IF THEY ARE PASSED ========================
     console.log('Address used to send the transactions: ' + senderAddress);
+    console.log('Node: ' + node);
     console.log('BSC network: ' + bscNetwork);
     gasLimit = (projectData.utils.propertyExists(args, 'gasLimit') && args.gasLimit != '' && args.gasLimit != null && args.gasLimit != undefined) ? args.gasLimit : gasLimit;
     console.log('Gas limit: ' + gasLimit);
