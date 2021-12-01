@@ -1,4 +1,4 @@
-![alt text](https://github.com/mnedelchev-vn/pancakeswap-sniper-bot/blob/main/pancakeswap-sniper-bot.png)
+![alt text](https://github.com/mnedelchev-vn/pancakeswap-sniper-bot/blob/main/assets/images/pancakeswap-sniper-bot.png)
 
 # PancakeSwap sniper bot
 
@@ -8,7 +8,7 @@ This bot allows you to compete with other trading bots when buying a cryptocurre
 ## Grateful users & donations
 This sniper bot is **fully free** and it was never meant to be paid. However if you appreciate my work I accept donations at **0x5ADD71300d924213456b037b5be25020C62D9e08**. The real rockstars will follow my twitter as well:
 
-[![Twitter URL](https://github.com/mnedelchev-vn/pancakeswap-sniper-bot/blob/main/twitter.svg)](https://twitter.com/intent/follow?screen_name=mnedelchev_)
+[![Twitter URL](https://github.com/mnedelchev-vn/pancakeswap-sniper-bot/blob/main/assets/images/twitter.svg)](https://twitter.com/intent/follow?screen_name=mnedelchev_)
 
 ## Features
 * Operating with PancakeSwap: Router v2
