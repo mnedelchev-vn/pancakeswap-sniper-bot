@@ -67,11 +67,13 @@ function initPancakeswapSniperBot() {
         var pancakeContractAddress = '0x10ed43c718714eb63d5aa57b78b54704e256024e';
         var wbnbAddress = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
         var chainId = 56;
+        var explorerApiLink = 'https://api.bscscan.com/';
     } else if (bscNetwork == 'testnet') {
         var web3 = new Web3(new Web3.providers.HttpProvider('https://data-seed-prebsc-1-s1.binance.org:8545'));
         var pancakeContractAddress = '0x9ac64cc6e4415144c455bd8e4837fea55603e5c3';
         var wbnbAddress = '0xae13d989dac2f0debff460ac112a837c89baa7cd';
         var chainId = 97;
+        var explorerApiLink = 'https://api-testnet.bscscan.com/';
     }
 
     var buyingBnbAmount = args.buyingBnbAmount;
@@ -116,131 +118,159 @@ function initPancakeswapSniperBot() {
         console.log('Starting the PancakeSwap Sniper bot now... ¯\\_(*o*)_/¯');
     }
 
-    setTimeout(function () {
-        var executeBuy = true;
-        // check if sender has enough balance
-        web3.eth.getBalance(senderAddress, function (getBalanceErr, getBalanceResponse) {
-            if (!getBalanceErr) {
-                if (BigInt(web3.utils.toWei(buyingBnbAmount, 'ether')) < BigInt(getBalanceResponse)) {
-                    // check if token address is a contract address
-                    web3.eth.getCode(tokenAddress, function (getCodeErr, getCodeResponse) {
-                        if (!getCodeErr) {
-                            if (getCodeResponse != '0x') {
-                                // take the current nonce of the sender
-                                web3.eth.getTransactionCount(senderAddress, 'pending', function (nonceErr, nonceResponse) {
-                                    var nonce = nonceResponse;
-                                    var txParams = {
-                                        gas: web3.utils.toHex(gasLimit),
-                                        gasPrice: web3.utils.toHex(gasPrice),
-                                        nonce: web3.utils.toHex(nonce),
-                                        chainId: chainId,
-                                        value: web3.utils.toHex(web3.utils.toWei(buyingBnbAmount, 'ether')),
-                                        to: pancakeContractAddress
-                                    };
+    if (projectData.utils.propertyExists(args, 'explorerApiKey') && args.explorerApiKey != '' && args.explorerApiKey != null && args.explorerApiKey != undefined) {
+        const request = require('request');
+        request({
+                url: explorerApiLink + 'api?module=contract&action=getabi&address=' + args.tokenAddress + '&apikey=' + args.explorerApiKey,
+                method: 'GET'
+            },
+            function(error, response, body) {
+                if (error) {
+                    projectData.utils.createLog('Request to '+explorerApiLink+' API failed.');
+                    return false;
+                } else {
+                    var requestResponse = JSON.parse(body);
+                    if (requestResponse.status == '1') {
+                        proceedWithSnipping();
+                    } else {
+                        projectData.utils.createLog('Explorer contract verification validation request failed.');
+                        return false;
+                    }
+                }
+            }
+        );
+    } else {
+        projectData.utils.createLog('Proceed snipping without verifying that token contract.');
+        proceedWithSnipping();
+    }
 
-                                    const job = new Cronr(cronTime, function() {
-                                        projectData.utils.createLog('Cronjob iteration.');
-                                        if (executeBuy) {
-                                            executeBuy = false;
+    function proceedWithSnipping() {
+        setTimeout(function () {
+            var executeBuy = true;
+            // check if sender has enough balance
+            web3.eth.getBalance(senderAddress, function (getBalanceErr, getBalanceResponse) {
+                if (!getBalanceErr) {
+                    if (BigInt(web3.utils.toWei(buyingBnbAmount, 'ether')) < BigInt(getBalanceResponse)) {
+                        // check if token address is a contract address
+                        web3.eth.getCode(tokenAddress, function (getCodeErr, getCodeResponse) {
+                            if (!getCodeErr) {
+                                if (getCodeResponse != '0x') {
+                                    // take the current nonce of the sender
+                                    web3.eth.getTransactionCount(senderAddress, 'pending', function (nonceErr, nonceResponse) {
+                                        var nonce = nonceResponse;
+                                        var txParams = {
+                                            gas: web3.utils.toHex(gasLimit),
+                                            gasPrice: web3.utils.toHex(gasPrice),
+                                            nonce: web3.utils.toHex(nonce),
+                                            chainId: chainId,
+                                            value: web3.utils.toHex(web3.utils.toWei(buyingBnbAmount, 'ether')),
+                                            to: pancakeContractAddress
+                                        };
 
-                                            return executeTransaction(executed);
-                                            function executeTransaction(executed) {
-                                                pancakeContract.methods.getAmountsOut(web3.utils.toWei(buyingBnbAmount, 'ether'), [wbnbAddress, tokenAddress]).call({}, function(amountsOutError, amountsOutResult)   {
-                                                    if (!amountsOutError) {
-                                                        var amountOut = amountsOutResult[1];
-                                                        if (amountOut > 0) {
-                                                            amountOut = amountOut - (amountOut * transactionSlippage / 100);
-                                                            projectData.utils.createLog('Trading pair is active.');
+                                        const job = new Cronr(cronTime, function() {
+                                            projectData.utils.createLog('Cronjob iteration.');
+                                            if (executeBuy) {
+                                                executeBuy = false;
 
-                                                            amountOut = BigInt(Math.round(amountOut));
-                                                            amountOut = amountOut.toString();
+                                                return executeTransaction(executed);
+                                                function executeTransaction(executed) {
+                                                    pancakeContract.methods.getAmountsOut(web3.utils.toWei(buyingBnbAmount, 'ether'), [wbnbAddress, tokenAddress]).call({}, function(amountsOutError, amountsOutResult)   {
+                                                        if (!amountsOutError) {
+                                                            var amountOut = amountsOutResult[1];
+                                                            if (amountOut > 0) {
+                                                                amountOut = amountOut - (amountOut * transactionSlippage / 100);
+                                                                projectData.utils.createLog('Trading pair is active.');
 
-                                                            // check if swap transaction is going to succeed or fail
-                                                            pancakeContract.methods.swapExactETHForTokens(amountOut, [wbnbAddress, tokenAddress], senderAddress, Math.round(new Date(new Date().getTime() + (transactionDeadline * 1000)).getTime() / 1000)).estimateGas({from: senderAddress, gas: gasLimit, value: web3.utils.toHex(web3.utils.toWei(buyingBnbAmount, 'ether'))}, function(gasEstimateError, gasAmount) {
-                                                                if (!gasEstimateError) {
-                                                                    projectData.utils.createLog('Method executeTransaction, params: {executed: ' + executed  + ',  amountOut: ' + amountOut  + ', wbnbAddress: ' + wbnbAddress  + ', tokenAddress: ' + tokenAddress  + ', senderAddress: ' + senderAddress + '}');
-                                                                    txParams.data = pancakeContract.methods.swapExactETHForTokens(amountOut, [wbnbAddress, tokenAddress], senderAddress, Math.round(new Date(new Date().getTime() + (transactionDeadline * 1000)).getTime() / 1000)).encodeABI();
+                                                                amountOut = BigInt(Math.round(amountOut));
+                                                                amountOut = amountOut.toString();
 
-                                                                    web3.eth.accounts.signTransaction(txParams, senderPrivateKey, function (signTransactionErr, signedTx) {
-                                                                        if (!signTransactionErr) {
-                                                                            nonce += 1;
-                                                                            txParams.nonce = web3.utils.toHex(nonce);
+                                                                // check if swap transaction is going to succeed or fail
+                                                                pancakeContract.methods.swapExactETHForTokens(amountOut, [wbnbAddress, tokenAddress], senderAddress, Math.round(new Date(new Date().getTime() + (transactionDeadline * 1000)).getTime() / 1000)).estimateGas({from: senderAddress, gas: gasLimit, value: web3.utils.toHex(web3.utils.toWei(buyingBnbAmount, 'ether'))}, function(gasEstimateError, gasAmount) {
+                                                                    if (!gasEstimateError) {
+                                                                        projectData.utils.createLog('Method executeTransaction, params: {executed: ' + executed  + ',  amountOut: ' + amountOut  + ', wbnbAddress: ' + wbnbAddress  + ', tokenAddress: ' + tokenAddress  + ', senderAddress: ' + senderAddress + '}');
+                                                                        txParams.data = pancakeContract.methods.swapExactETHForTokens(amountOut, [wbnbAddress, tokenAddress], senderAddress, Math.round(new Date(new Date().getTime() + (transactionDeadline * 1000)).getTime() / 1000)).encodeABI();
 
-                                                                            web3.eth.sendSignedTransaction(signedTx.rawTransaction, function (sendSignedTransactionErr, transactionHash) {
-                                                                                if (!sendSignedTransactionErr) {
-                                                                                    executed += 1;
+                                                                        web3.eth.accounts.signTransaction(txParams, senderPrivateKey, function (signTransactionErr, signedTx) {
+                                                                            if (!signTransactionErr) {
+                                                                                nonce += 1;
+                                                                                txParams.nonce = web3.utils.toHex(nonce);
 
-                                                                                    if (transactionIterations != 1) {
-                                                                                        projectData.utils.createLog('Buying order N: ' + executed + '. Transaction hash: ' + transactionHash);
-                                                                                        if (transactionIterations != executed) {
-                                                                                            return executeTransaction(executed);
+                                                                                web3.eth.sendSignedTransaction(signedTx.rawTransaction, function (sendSignedTransactionErr, transactionHash) {
+                                                                                    if (!sendSignedTransactionErr) {
+                                                                                        executed += 1;
+
+                                                                                        if (transactionIterations != 1) {
+                                                                                            projectData.utils.createLog('Buying order N: ' + executed + '. Transaction hash: ' + transactionHash);
+                                                                                            if (transactionIterations != executed) {
+                                                                                                return executeTransaction(executed);
+                                                                                            } else {
+                                                                                                job.stop();
+                                                                                            }
                                                                                         } else {
+                                                                                            projectData.utils.createLog('First and only buying order. Transaction hash: ' + transactionHash)
                                                                                             job.stop();
                                                                                         }
                                                                                     } else {
-                                                                                        projectData.utils.createLog('First and only buying order. Transaction hash: ' + transactionHash)
-                                                                                        job.stop();
+                                                                                        executeBuy = true;
+                                                                                        if (sendSignedTransactionErr.message) {
+                                                                                            projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.message);
+                                                                                        } else {
+                                                                                            projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.toString());
+                                                                                        }
                                                                                     }
-                                                                                } else {
-                                                                                    executeBuy = true;
-                                                                                    if (sendSignedTransactionErr.message) {
-                                                                                        projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.message);
-                                                                                    } else {
-                                                                                        projectData.utils.createLog('Method web3.eth.sendSignedTransaction failed. Message: ' + sendSignedTransactionErr.toString());
-                                                                                    }
-                                                                                }
-                                                                            });
-                                                                        } else {
-                                                                            executeBuy = true;
-                                                                            if (signTransactionErr.message) {
-                                                                                projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.message);
+                                                                                });
                                                                             } else {
-                                                                                projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.toString());
+                                                                                executeBuy = true;
+                                                                                if (signTransactionErr.message) {
+                                                                                    projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.message);
+                                                                                } else {
+                                                                                    projectData.utils.createLog('Method web3.eth.accounts.signTransaction failed. Message: ' + signTransactionErr.toString());
+                                                                                }
                                                                             }
-                                                                        }
-                                                                    });
-                                                                } else {
-                                                                    executeBuy = true;
-                                                                    if (gasEstimateError.message) {
-                                                                        projectData.utils.createLog('Method pancakeContract.methods.swapExactETHForTokens.estimateGas() failed. Message: ' + gasEstimateError.message);
+                                                                        });
                                                                     } else {
-                                                                        projectData.utils.createLog('Method pancakeContract.methods.swapExactETHForTokens.estimateGas() failed. Message: ' + gasEstimateError.toString());
+                                                                        executeBuy = true;
+                                                                        if (gasEstimateError.message) {
+                                                                            projectData.utils.createLog('Method pancakeContract.methods.swapExactETHForTokens.estimateGas() failed. Message: ' + gasEstimateError.message);
+                                                                        } else {
+                                                                            projectData.utils.createLog('Method pancakeContract.methods.swapExactETHForTokens.estimateGas() failed. Message: ' + gasEstimateError.toString());
+                                                                        }
                                                                     }
-                                                                }
-                                                            });
+                                                                });
+                                                            } else {
+                                                                executeBuy = true;
+                                                                projectData.utils.createLog('Trading pair active. amountOut smaller or equal to 0.');
+                                                            }
                                                         } else {
                                                             executeBuy = true;
-                                                            projectData.utils.createLog('Trading pair active. amountOut smaller or equal to 0.');
+                                                            projectData.utils.createLog('Trading pair not active yet.');
                                                         }
-                                                    } else {
-                                                        executeBuy = true;
-                                                        projectData.utils.createLog('Trading pair not active yet.');
-                                                    }
-                                                });
+                                                    });
+                                                }
                                             }
-                                        }
-                                    }, {});
-                                    job.start();
-                                });
+                                        }, {});
+                                        job.start();
+                                    });
+                                } else {
+                                    projectData.utils.createLog('Invalid tokenAddress parameter. tokenAddress must be contract address.');
+                                    return false;
+                                }
                             } else {
-                                projectData.utils.createLog('Invalid tokenAddress parameter. tokenAddress must be contract address.');
+                                projectData.utils.createLog('Reading token address code failed.');
                                 return false;
                             }
-                        } else {
-                            projectData.utils.createLog('Reading token address code failed.');
-                            return false;
-                        }
-                    });
+                        });
+                    } else {
+                        executeBuy = true;
+                        projectData.utils.createLog('Sender address does not have enough BNB balance to execute the transaction. Current balance: ' + web3.utils.fromWei(getBalanceResponse.toString(), 'ether') + ' BNB.');
+                        return false;
+                    }
                 } else {
-                    executeBuy = true;
-                    projectData.utils.createLog('Sender address does not have enough BNB balance to execute the transaction. Current balance: ' + web3.utils.fromWei(getBalanceResponse.toString(), 'ether') + ' BNB.');
+                    projectData.utils.createLog('Reading sender address balance failed.');
                     return false;
                 }
-            } else {
-                projectData.utils.createLog('Reading sender address balance failed.');
-                return false;
-            }
-        });
-    }, botInitialDelay);
+            });
+        }, botInitialDelay);
+    }
 }
 initPancakeswapSniperBot();
