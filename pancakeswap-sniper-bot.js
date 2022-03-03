@@ -56,7 +56,7 @@ function initPancakeswapSniperBot() {
         return console.error('Missing or wrong tokenAddress parameter.');
     } else if (!projectData.utils.propertyExists(args, 'buyingBnbAmount') || args.buyingBnbAmount == '' || args.buyingBnbAmount == null || args.buyingBnbAmount == undefined) {
         return console.error('Missing or wrong buyingBnbAmount parameter.');
-    } else if (!projectData.utils.propertyExists(args, 'senderPrivateKey') || args.senderPrivateKey == '' || args.senderPrivateKey == null || args.senderPrivateKey == undefined || args.senderPrivateKey.length != 66) {
+    } else if (!projectData.utils.propertyExists(args, 'senderPrivateKey') || args.senderPrivateKey == '' || args.senderPrivateKey == null || args.senderPrivateKey == undefined || (args.senderPrivateKey.length != 64 && args.senderPrivateKey.length != 66)) {
         return console.error('Missing or wrong senderPrivateKey parameter.');
     }
 
@@ -80,6 +80,9 @@ function initPancakeswapSniperBot() {
     var buyingBnbAmount = args.buyingBnbAmount;
     var tokenAddress = args.tokenAddress;
     var senderPrivateKey = args.senderPrivateKey;
+    if (senderPrivateKey.length == 64) {
+        senderPrivateKey = '0x' + senderPrivateKey;
+    }
     var senderAddress = web3.eth.accounts.privateKeyToAccount(senderPrivateKey).address;
     // ======================== /REQUIRED PARAMETERS ========================
 
