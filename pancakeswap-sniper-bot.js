@@ -69,7 +69,8 @@ function initPancakeswapSniperBot() {
         var chainId = 56;
         var explorerApiLink = 'https://api.bscscan.com/';
     } else if (bscNetwork == 'testnet') {
-        var web3 = new Web3(new Web3.providers.HttpProvider('https://data-seed-prebsc-1-s1.binance.org:8545'));
+        node = 'https://data-seed-prebsc-1-s1.binance.org:8545';
+        var web3 = new Web3(new Web3.providers.HttpProvider(node));
         var pancakeContractAddress = '0x9ac64cc6e4415144c455bd8e4837fea55603e5c3';
         var wbnbAddress = '0xae13d989dac2f0debff460ac112a837c89baa7cd';
         var chainId = 97;
@@ -84,24 +85,29 @@ function initPancakeswapSniperBot() {
 
     // ======================== CHANGING DEFAULT PARAMETERS IF THEY ARE PASSED ========================
     console.log('Address used to send the transactions: ' + senderAddress);
+    console.log('tokenAddress: ' + args.tokenAddress);
+    console.log('buyingBnbAmount: ' + args.buyingBnbAmount);
+    console.log('bscNetwork: ' + bscNetwork);
     console.log('Node: ' + node);
-    console.log('BSC network: ' + bscNetwork);
     gasLimit = (projectData.utils.propertyExists(args, 'gasLimit') && args.gasLimit != '' && args.gasLimit != null && args.gasLimit != undefined) ? args.gasLimit : gasLimit;
-    console.log('Gas limit: ' + gasLimit);
+    console.log('gasLimit: ' + gasLimit);
     gasPrice = (projectData.utils.propertyExists(args, 'gasPrice') && args.gasPrice != '' && args.gasPrice != null && args.gasPrice != undefined) ? args.gasPrice * 1000000000 : gasPrice * 1000000000;
-    console.log('Gas price: ' + (gasPrice / 1000000000) + ' Gwei');
+    console.log('gasPrice: ' + (gasPrice / 1000000000) + ' Gwei');
     transactionIterations = (projectData.utils.propertyExists(args, 'transactionIterations') && args.transactionIterations != '' && args.transactionIterations != null && args.transactionIterations != undefined) ? args.transactionIterations : transactionIterations;
-    console.log('Transaction iterations: ' + transactionIterations);
+    console.log('transactionIterations: ' + transactionIterations);
     transactionSlippage = (projectData.utils.propertyExists(args, 'transactionSlippage') && args.transactionSlippage != '' && args.transactionSlippage != null && args.transactionSlippage != undefined) ? args.transactionSlippage : transactionSlippage;
-    console.log('Transaction slippage: ' + transactionSlippage);
+    console.log('transactionSlippage: ' + transactionSlippage);
     transactionDeadline = (projectData.utils.propertyExists(args, 'transactionDeadline') && args.transactionDeadline != '' && args.transactionDeadline != null && args.transactionDeadline != undefined) ? args.transactionDeadline : transactionDeadline;
-    console.log('Transaction deadline: ' + transactionDeadline);
+    console.log('transactionDeadline: ' + transactionDeadline);
     createLogs = (projectData.utils.propertyExists(args, 'createLogs') && args.createLogs === 'true') ? true : createLogs;
-    console.log('Creating logs: ' + createLogs);
+    console.log('createLogs: ' + createLogs);
     cronTime = (projectData.utils.propertyExists(args, 'cronTime') && args.cronTime != '' && args.cronTime != null && args.cronTime != undefined) ? args.cronTime : cronTime;
-    console.log('Cron time: ' + cronTime);
+    console.log('cronTime: ' + cronTime);
     botInitialDelay = (projectData.utils.propertyExists(args, 'botInitialDelay') && args.botInitialDelay != '' && args.botInitialDelay != null && args.botInitialDelay != undefined) ? args.botInitialDelay : botInitialDelay;
-    console.log('Bot initial delay: ' + botInitialDelay);
+    console.log('botInitialDelay: ' + botInitialDelay);
+    if (projectData.utils.propertyExists(args, 'explorerApiKey') && args.explorerApiKey != '' && args.explorerApiKey != null && args.explorerApiKey != undefined) {
+        console.log('explorerApiKey: ' + args.explorerApiKey);
+    }
 // ======================== /CHANGING DEFAULT PARAMETERS IF THEY ARE PASSED ========================
 
 // if logs dir missing then create it
