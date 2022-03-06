@@ -28,7 +28,7 @@ For people who have expressed their support through a donation I offer personal 
 Clone this repository ( or download from Code -> Download ZIP ) and open your terminal inside the bot folder. Run `npm install` inside the bot folder. This command will download all the needed libraries which the bot needs to work properly. After the installation of the libraries is done then you're all set up to start sniping tokens!
 
 ## Usage
-You can run the script using `node` or `pm2` commands. I personally like to use the `pm2` command on my server, because PM2 is a process manager which takes care for my script to run 24/7. *( but for the `pm2` option you need to own a virtual server )*
+You can run the script using `node` or `pm2` commands. I personally like to use the `pm2` command on my server, because PM2 is a process manager which takes care for my script to run 24/7. *( For the `pm2` option you need to own a virtual server. )*
 
 #### Required parameters:
 * `tokenAddress` - this is the contract address of the token you're willing to buy. String, 42 bytes size starting with `0x`.
