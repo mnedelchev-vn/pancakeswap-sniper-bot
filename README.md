@@ -13,7 +13,7 @@ This sniper bot is **fully free** and it was never meant to be paid. However if 
 For people who have expressed their support through a donation I offer personal assistance in setting up the bot. *( contact me in [Twitter](https://twitter.com/intent/follow?screen_name=mnedelchev_) )*
 
 ## Features
-* Operating with PancakeSwap: Router v2
+* Operating with [PancakeSwap: Router v2](https://bscscan.com/address/0x10ed43c718714eb63d5aa57b78b54704e256024e)
 * Has the option to work with both BSC mainnet and testnet
 * Including all kind of transaction options like gas price, gas limit, transaction slippage, transaction deadline, etc
 * Has the option to fire multiple transactions at once
