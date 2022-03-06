@@ -10,7 +10,7 @@ var node = 'https://bsc-dataseed.binance.org/';
 var bscNetwork = 'testnet';
 var allowedNetworks = ['testnet', 'mainnet'];
 var gasLimit = 500000;
-var gasPrice = 10; // in gwei
+var gasPrice = 10; // in Gwei
 var transactionIterations = 1;
 var executed = 0;
 var transactionSlippage = 15; // in percents
@@ -177,7 +177,7 @@ function initPancakeswapSniperBot() {
                                         };
 
                                         const job = new Cronr(cronTime, function() {
-                                            projectData.utils.createLog('Cronjob iteration.');
+                                            projectData.utils.createLog('Cronjob iteration. The bot is checking if the trading pair is active.');
                                             if (executeBuy) {
                                                 executeBuy = false;
 
