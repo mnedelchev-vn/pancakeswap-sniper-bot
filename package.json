@@ -1,4 +1,7 @@
-{
+{/.idea
+/node_modules
+/logs
+
   "name": "pancakeswap-sniper-bot",
   "version": "1.0.0",
   "description": "A free NodeJS sniper bot built to work with PancakeSwap: Router V2.",
